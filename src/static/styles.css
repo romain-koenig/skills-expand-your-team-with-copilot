@@ -32,6 +32,24 @@
   --info-light: #d1ecf1;
 }
 
+/* Dark mode color overrides */
+body.dark-mode {
+  --background: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --border: #333333;
+  --border-light: #2a2a2a;
+  --border-focus: #444444;
+  --primary: #534bae;
+  --primary-light: #7c6fc9;
+  --primary-dark: #1a237e;
+  --success-light: #1b3a1e;
+  --warning-light: #3a2a00;
+  --error-light: #3a1010;
+  --info-light: #0a2830;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -681,6 +699,14 @@ footer {
   position: absolute;
   top: 10px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#dark-mode-toggle {
+  padding: 4px 10px;
+  font-size: 1rem;
 }
 
 #user-status {
