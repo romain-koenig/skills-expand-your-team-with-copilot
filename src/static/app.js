@@ -472,6 +472,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Helper to escape HTML special characters for use in attributes and text
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -569,6 +579,15 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-section">
+        <span class="share-label">Share:</span>
+        <div class="share-buttons">
+          <button class="share-button share-twitter" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" title="Share on X (Twitter)">𝕏</button>
+          <button class="share-button share-facebook" data-activity="${escapeHtml(name)}" title="Share on Facebook">f</button>
+          <button class="share-button share-whatsapp" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" title="Share on WhatsApp">💬</button>
+          <button class="share-button share-copy" data-activity="${escapeHtml(name)}" title="Copy link">🔗</button>
+        </div>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -587,7 +606,52 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add click handlers for share buttons
+    activityCard.querySelectorAll(".share-button").forEach((btn) => {
+      btn.addEventListener("click", handleShare);
+    });
+
     activitiesList.appendChild(activityCard);
+  }
+
+  // Handle social sharing
+  function handleShare(event) {
+    const btn = event.currentTarget;
+    const activityName = btn.dataset.activity;
+    const description = btn.dataset.description || "";
+    const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(activityName)}`;
+    const shareText = `Check out "${activityName}" at Mergington High School! ${description}`;
+
+    if (btn.classList.contains("share-twitter")) {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } else if (btn.classList.contains("share-facebook")) {
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } else if (btn.classList.contains("share-whatsapp")) {
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } else if (btn.classList.contains("share-copy")) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        const original = btn.textContent;
+        btn.textContent = "✓";
+        setTimeout(() => {
+          btn.textContent = original;
+        }, 1500);
+        showMessage("Link copied to clipboard!", "success");
+      }).catch(() => {
+        showMessage("Could not copy link. Please copy the URL manually.", "error");
+      });
+    }
   }
 
   // Event listeners for search and filter
